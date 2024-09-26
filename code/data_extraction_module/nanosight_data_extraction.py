@@ -8,6 +8,7 @@ import itertools
 from data_extraction_module.nanosight_export_files_listing import list_nanosight_files_in_directory
 from data_extraction_module.nanosight_export_files_reading import read_experiment_summary_file
 
+from scipy.integrate import simpson
 
 
 
@@ -84,7 +85,7 @@ def extract_nanosight_data_from_directory(directory_path, dilution_prefix, repli
         total_concentrations = ['Total concentration']
         videos_cols = [col for col in size_distributions.columns if 'Concentration Video' in col]
         for col in videos_cols:
-            area = np.trapz(size_distributions[col], size_distributions['Bin centre (nm)'])
+            area = simpson(x=size_distributions['Bin centre (nm)'], y=size_distributions[col])
             total_concentrations.append(area)
         total_concentrations = pandas.DataFrame(np.array(total_concentrations).reshape(1,-1), 
                                                 columns=['key']+[col.replace('Concentration ','') for col in videos_cols])

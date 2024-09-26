@@ -5,6 +5,7 @@ import tkinter.font as TkFont
 from pathlib import Path
 import numpy as np
 import pandas
+from scipy.integrate import simpson
 
 import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "serif"
@@ -636,7 +637,7 @@ class NanosightApp():
 
         # all file average distributions in one plot + normalize distributions (divide by area to have densities)
         list_concentrations = [self.data['size_distributions']['Average '+filename] for filename in self.filenames]
-        list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+        list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
         list_legend_labels = [filename+', normalized' for filename in self.filenames]
         plot_size_distributions(bin_centers, list_normalized_concentrations, savepath=plots_savepath, 
                                     list_legend_labels=list_legend_labels, name='all_files_normalized')
@@ -673,7 +674,7 @@ class NanosightApp():
             # plot all samples average distributions + normalize distributions (divide by area to have densities)
             list_concentrations = [self.data['size_distributions']['Average '+sample_name] 
                                            for sample_name in self.samples_names if len(self.data['samples_filenames'][sample_name])>=2]
-            list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+            list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
             list_legend_labels = [sample_name+', normalized' for sample_name in self.samples_names if len(self.data['samples_filenames'][sample_name])>=2]
             plot_size_distributions(bin_centers, list_normalized_concentrations, list_legend_labels=list_legend_labels, name='all_samples_normalized', 
                                         savepath=plots_savepath)
@@ -740,7 +741,7 @@ class NanosightApp():
         bin_centers = self.data['size_distributions']['Bin centers'].values
 
         list_concentrations = [self.data['size_distributions']['Average '+filename] for filename in self.filenames]
-        list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+        list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
         list_legend_labels = self.filenames        
 
         run_wasserstein_clustering(bin_centers, list_normalized_concentrations, list_legend_labels, name='all_files', 
@@ -756,7 +757,7 @@ class NanosightApp():
         if self.any_replicates:
 
             list_concentrations = [self.data['size_distributions']['Average '+sample_name] for sample_name in self.samples_names]
-            list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+            list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
             list_legend_labels = self.samples_names
     
             run_wasserstein_clustering(bin_centers, list_normalized_concentrations, list_legend_labels, name='all_samples', 
@@ -793,7 +794,7 @@ class NanosightApp():
         bin_centers = self.data['size_distributions']['Bin centers'].values
 
         list_concentrations = [self.data['size_distributions']['Average '+filename] for filename in self.filenames]
-        list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+        list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
         list_legend_labels = self.filenames        
 
         run_two_samples_tests(bin_centers, list_normalized_concentrations, list_legend_labels, 
@@ -808,7 +809,7 @@ class NanosightApp():
         bin_centers = self.data['size_distributions']['Bin centers'].values
 
         list_concentrations = [self.data['size_distributions']['Average '+filename] for filename in self.samples_names]
-        list_normalized_concentrations = [distrib / np.trapz(distrib, bin_centers) for distrib in list_concentrations]
+        list_normalized_concentrations = [distrib / simpson(x=bin_centers, y=distrib) for distrib in list_concentrations]
         list_legend_labels = self.samples_names        
 
         run_two_samples_tests(bin_centers, list_normalized_concentrations, list_legend_labels, 
